@@ -41,20 +41,20 @@ class ModernPendulumTransformer(nn.Module):
         super().__init__()
         self.d_model = cfg.model_dim
         
-        # 1. CNN Backbone:压缩 72000 -> ~1125
+        # ✅ CNN Backbone: 压缩率还是 64 倍。 36000 压缩后序列长度约为 562
         self.backbone = nn.Sequential(
             nn.Conv1d(1, 32, 7, 4, 3), nn.BatchNorm1d(32), nn.GELU(),
             nn.Conv1d(32, 64, 7, 4, 3), nn.BatchNorm1d(64), nn.GELU(),
             nn.Conv1d(64, self.d_model, 7, 4, 3), nn.BatchNorm1d(self.d_model), nn.GELU(),
         )
         
-        # 2. RoPE & Layers
+        # RoPE & Layers
         self.rope = RotaryEmbedding(self.d_model // cfg.num_heads)
         self.layers = nn.ModuleList([
             Block(self.d_model, cfg.num_heads, cfg.dropout) for _ in range(cfg.num_layers)
         ])
         
-        # 3. Output Head
+        # Output Head
         self.pool_attn = nn.Sequential(
             nn.Linear(self.d_model, self.d_model // 2), nn.Tanh(),
             nn.Linear(self.d_model // 2, 1), nn.Softmax(dim=1)
