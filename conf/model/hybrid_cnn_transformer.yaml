@@ -1,8 +1,8 @@
 identifier: "transformer@ModernPendulumTransformer"
 
 # 模型架构参数
-input_dim: 1    # 输入只有 Angle (Time列虽然存在但通常不喂给模型)
-output_dim: 3   # 预测 k1, k2, n
+input_dim: 1    
+output_dim: 2   
 model_dim: 256
 num_heads: 4
 num_layers: 4
